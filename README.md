@@ -7,7 +7,7 @@ Currently, mass-univariate dependent and independent t-tests of NIRS task-relate
 
 ## Directory Structure
 
-The directory MUST be organized for laodData() as follows:
+The directory MUST be organized for loadData() as follows:
 ```
  Study
  ├── Group1
