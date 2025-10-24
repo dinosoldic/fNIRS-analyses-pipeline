@@ -8,6 +8,7 @@ Currently, mass-univariate dependent and independent t-tests of NIRS task-relate
 ## Directory Structure
 
 The directory MUST be organized as follows:
+```
  Study
  ├── Group1
  │   ├── Condition1
@@ -30,7 +31,7 @@ The directory MUST be organized as follows:
      └── Condition2
          ├── data1
          └── dataN
-
+```
 ## Pipeline Overview
 
 1. **Extract Files (Optional)**
