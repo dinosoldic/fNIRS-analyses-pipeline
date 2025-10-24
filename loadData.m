@@ -1,4 +1,4 @@
-%   Recursively loads NIRS data from a folder structure.
+%   Helper function for NIRSAnalysis. Recursively loads NIRS data from a folder structure.
 %
 %   [taskData, restData, time] = loadData(currentFolder, taskData, restData)
 %
@@ -7,6 +7,33 @@
 %   and separate task vs rest data into structured arrays. It can
 %   recursively navigate subdirectories to aggregate data from multiple
 %   subjects or conditions.
+%
+%   The directory MUST be organized as follows:
+%
+%     Study
+%     ├── Group1
+%     │   ├── Condition1
+%     │   │   ├── data1
+%     │   │   └── dataN
+%     │   └── Condition2
+%     │       ├── data1
+%     │       └── dataN
+%     ├── Group2
+%     │   ├── Condition1
+%     │   │   ├── data1
+%     │   │   └── dataN
+%     │   └── Condition2
+%     │       ├── data1
+%     │       └── dataN
+%     └── Group3
+%         ├── Condition1
+%         │   ├── data1
+%         │   └── dataN
+%         └── Condition2
+%             ├── data1
+%             └── dataN
+%
+%   When prompted the Study folder should be selected to load data from.
 %
 %   Inputs:
 %       currentFolder - (string/char) Path to the folder containing .txt data files
