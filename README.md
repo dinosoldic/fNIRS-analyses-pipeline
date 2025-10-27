@@ -1,4 +1,4 @@
-# fNIRS Analyses Pipeline
+# fNIRS Analysis Pipeline
 
 This repository provides a basic pipeline for fNIRS data analysis using MATLAB. It includes tools to organize data, perform analysis, and visualize results.
 Currently, mass-univariate dependent and independent t-tests of NIRS task-related time domain are included.
