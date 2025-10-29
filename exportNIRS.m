@@ -16,7 +16,7 @@
 %
 %   Author: Dino Soldic
 %   Email: dino.soldic@urjc.es
-%   Date: 2025-10-24
+%   Date: 2025-10-29
 %
 %   See also NIRSAnalysis
 
@@ -58,66 +58,7 @@ function exportNIRS(results, savepath, time, isSubCond)
     displacement = 1;
 
     switch results.type.analysis
-        case {"muit-group", "muit-group-avg"} % groups
-
-            nCond = results.condition.code(end);
-            group = strjoin(results.group.name, "-");
-
-            dataCell = cell(nCond * nTime, nChan * 2 + 5); % cols = chans + time, task, grp, cond * p+t stats
-
-            for condIdx = 1:nCond
-                condition = results.condition.name(condIdx);
-
-                for timeIdx = 1:nTime
-
-                    dataCell{displacement, 1} = results.type.data;
-                    dataCell{displacement, 2} = results.type.analysis;
-                    dataCell{displacement, 3} = group;
-                    dataCell{displacement, 4} = condition;
-                    dataCell{displacement, 5} = time(timeIdx);
-
-                    for chanIdx = 1:nChan
-
-                        if isAvg
-                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(timeIdx, condIdx);
-                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(timeIdx, condIdx);
-                        else
-                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(chanIdx, timeIdx, condIdx);
-                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(chanIdx, timeIdx, condIdx);
-                        end
-
-                    end
-
-                    displacement = displacement + 1;
-
-                end
-
-            end
-
-            dataT = cell2table(dataCell, "VariableNames", dataHeaders);
-
-            if isAvg
-
-                if isSubCond
-                    filename = 'results_task_avg_group_substracted.csv';
-                else
-                    filename = 'results_task_avg_group.csv';
-                end
-
-            else
-
-                if isSubCond
-                    filename = 'results_task_group_substracted.csv';
-                else
-                    filename = 'results_task_group.csv';
-                end
-
-            end
-
-            writetable(dataT, fullfile(savepath, filename));
-            disp("Exported:'" + filename(1:end - 4) + "' to csv");
-
-        case {"muit-condition", "muit-condition-avg"} % conditions
+        case {"muit-condition", "muit-condition-avg"} % condition
 
             nCond = results.condition.code(end);
             group = "";
@@ -176,7 +117,66 @@ function exportNIRS(results, savepath, time, isSubCond)
             writetable(dataT, fullfile(savepath, filename));
             disp("Exported:'" + filename(1:end - 4) + "' to csv");
 
-        case {"mudt", "mudt-avg"} % within
+        case {"muit-group", "muit-group-avg"} % groups
+
+            nCond = results.condition.code(end);
+            group = "";
+
+            dataCell = cell(nTime, nChan * 2 + 5); % cols = chans + time, task, grp, cond * p+t stats
+
+            for condIdx = 1:nCond
+                condition = results.condition.name(condIdx);
+
+                for timeIdx = 1:nTime
+
+                    dataCell{displacement, 1} = results.type.data;
+                    dataCell{displacement, 2} = results.type.analysis;
+                    dataCell{displacement, 3} = group;
+                    dataCell{displacement, 4} = condition;
+                    dataCell{displacement, 5} = time(timeIdx);
+
+                    for chanIdx = 1:nChan
+
+                        if isAvg
+                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(timeIdx);
+                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(timeIdx);
+                        else
+                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(chanIdx, timeIdx);
+                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(chanIdx, timeIdx, condIdx);
+                        end
+
+                    end
+
+                    displacement = displacement + 1;
+
+                end
+
+            end
+
+            dataT = cell2table(dataCell, "VariableNames", dataHeaders);
+
+            if isAvg
+
+                if isSubCond
+                    filename = 'results_task_avg_group_substracted.csv';
+                else
+                    filename = 'results_task_avg_group.csv';
+                end
+
+            else
+
+                if isSubCond
+                    filename = 'results_task_group_substracted.csv';
+                else
+                    filename = 'results_task_group.csv';
+                end
+
+            end
+
+            writetable(dataT, fullfile(savepath, filename));
+            disp("Exported:'" + filename(1:end - 4) + "' to csv");
+
+        case {"mudt-within", "mudt-within-avg"} % within
 
             nGrp = results.group.code(end);
             nCond = results.condition.code(end);
@@ -233,6 +233,65 @@ function exportNIRS(results, savepath, time, isSubCond)
                     filename = 'results_task_withinSub_substracted.csv';
                 else
                     filename = 'results_task_withinSub.csv';
+                end
+
+            end
+
+            writetable(dataT, fullfile(savepath, filename));
+            disp("Exported:'" + filename(1:end - 4) + "' to csv");
+
+        case {"mudt-nogroup", "mudt-nogroup-avg"} % no groups
+
+            group = "";
+            nCond = results.condition.code(end);
+
+            dataCell = cell(nCond * nTime, nChan * 2 + 5); % cols = chans + time, task, grp, cond * p+t stats
+
+            for condIdx = 1:nCond
+                condition = results.condition.name(condIdx);
+
+                for timeIdx = 1:nTime
+
+                    dataCell{displacement, 1} = results.type.data;
+                    dataCell{displacement, 2} = results.type.analysis;
+                    dataCell{displacement, 3} = group;
+                    dataCell{displacement, 4} = condition;
+                    dataCell{displacement, 5} = time(timeIdx);
+
+                    for chanIdx = 1:nChan
+
+                        if isAvg
+                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(timeIdx, condIdx);
+                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(timeIdx, condIdx);
+                        else
+                            dataCell{displacement, 5 + 2 * chanIdx - 1} = results.stats.t(chanIdx, timeIdx, condIdx);
+                            dataCell{displacement, 5 + 2 * chanIdx} = results.stats.p(chanIdx, timeIdx, condIdx);
+                        end
+
+                    end
+
+                    displacement = displacement + 1;
+
+                end
+
+            end
+
+            dataT = cell2table(dataCell, "VariableNames", dataHeaders);
+
+            if isAvg
+
+                if isSubCond
+                    filename = 'results_task_avg_nogroup_substracted.csv';
+                else
+                    filename = 'results_task_avg_nogroup.csv';
+                end
+
+            else
+
+                if isSubCond
+                    filename = 'results_task_nogroup_substracted.csv';
+                else
+                    filename = 'results_task_nogroup.csv';
                 end
 
             end
