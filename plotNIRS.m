@@ -481,4 +481,13 @@ function plotNIRS(results, data)
 
     end
 
+    %% Wait for user to finish inspecting plots
+    if ~isempty(findall(0, 'Type', 'figure', 'Visible', 'on')), uiwait(gcf); end
+
+    doTopo = questdlg('Do you wish plot topographic maps?', 'Plot Topoplot', 'Yes', 'No', 'Yes');
+
+    if strcmp(doTopo, 'Yes')
+        nirsTopoplot(plotData, time);
+    end
+
 end
