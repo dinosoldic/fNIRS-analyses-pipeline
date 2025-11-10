@@ -70,7 +70,7 @@ function expandPlot(plotData, sig, groups, condition, channel, time, colors, isA
 
             set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
             xlabel('Time (s)', 'FontSize', 50);
-            ylabel('Concentration (mol/L^{-1})', 'FontSize', 50);
+            ylabel('Concentration (mol/L)', 'FontSize', 50);
             xlim([min(time) * 1.01, max(time) * 1.01]);
             ylim padded;
             xticks(floor(min(time)):ceil(max(time)));
@@ -152,7 +152,7 @@ function expandPlot(plotData, sig, groups, condition, channel, time, colors, isA
 
             set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
             xlabel('Time (s)', 'FontSize', 50);
-            ylabel('Concentration (mol/L^{-1})', 'FontSize', 50);
+            ylabel('Concentration (mol/L)', 'FontSize', 50);
             xlim([min(time) * 1.01, max(time) * 1.01]);
             ylim padded;
             xticks(floor(min(time)):ceil(max(time)));
@@ -219,7 +219,7 @@ function expandPlot(plotData, sig, groups, condition, channel, time, colors, isA
 
             set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
             xlabel('Time (s)', 'FontSize', 50);
-            ylabel('Concentration (mol/L^{-1})', 'FontSize', 50);
+            ylabel('Concentration (mol/L)', 'FontSize', 50);
             xlim([min(time) * 1.01, max(time) * 1.01]);
             ylim padded;
             xticks(floor(min(time)):ceil(max(time)));
@@ -286,7 +286,7 @@ function expandPlot(plotData, sig, groups, condition, channel, time, colors, isA
 
             set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
             xlabel('Time (s)', 'FontSize', 50);
-            ylabel('Concentration (mol/L^{-1})', 'FontSize', 50);
+            ylabel('Concentration (mol/L)', 'FontSize', 50);
             xlim([min(time) * 1.01, max(time) * 1.01]);
             ylim padded;
             xticks(floor(min(time)):ceil(max(time)));
