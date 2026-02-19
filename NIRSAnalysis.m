@@ -171,8 +171,28 @@ function NIRSAnalysis(ALLDATA)
     p = 0.05;
 
     % Select mult comp type
-    [multCompType, ~] = listdlg('ListString', {'FDR', 'T-Max'}, 'PromptString', 'Select multiple comparison correction type:', 'SelectionMode', 'single');
+    [multCompType, ~] = listdlg('ListString', {'FDR', 'T-Max', 'Cluster-Based'}, 'PromptString', 'Select multiple comparison correction type:', 'SelectionMode', 'single');
     if isempty(multCompType), disp('Operation canceled. Shutting down'); return, end
+
+    if multCompType == 3
+        chanlocs = loadChanlocs();
+
+        % Extract coordinates
+        X = [chanlocs.X];
+        Y = [chanlocs.Y];
+        Z = [chanlocs.Z];
+        coords = [X; Y; Z]';
+
+        % Calculate distance between every pair of channels
+        dist_mat = squareform(pdist(coords));
+
+        % Define neighborhood threshold
+        % (If coordinates are in mm, 40-50 is standard for NIRS)
+        thresh = 45;
+        adj = dist_mat < thresh;
+        adj = adj - eye(size(adj)); % Remove self-connectivity
+        adj = adj(chanOpt, chanOpt);
+    end
 
     % init parallel toolbox
     try
@@ -336,6 +356,13 @@ function NIRSAnalysis(ALLDATA)
 
                     hVals(:, :, condIdx) = pVals_max < p;
                     pVals(:, :, condIdx) = pVals_max;
+
+                case 3 % for cluster based
+
+                    [h_cl, p_cl] = clusterCorrection(tVals(:, :, condIdx), tNull_all, adj, p);
+
+                    hVals(:, :, condIdx) = h_cl;
+                    pVals(:, :, condIdx) = p_cl;
 
             end
 
@@ -521,6 +548,8 @@ function NIRSAnalysis(ALLDATA)
             case 2 % T-MAX
                 pVals = pVals_max;
                 hVals = pVals_max < p;
+            case 3 % for cluster based
+                [hVals, pVals] = clusterCorrection(tVals, tNull_all, adj, p);
         end
 
         labels = string(strjoin(condNames(condOpt), "_"));
@@ -708,6 +737,13 @@ function NIRSAnalysis(ALLDATA)
                     case 2 % maxT
                         pVals(:, :, condIdx, grpIdx) = pVals_max;
                         hVals(:, :, condIdx, grpIdx) = pVals_max < p;
+
+                    case 3 % for cluster based
+
+                        [h_cl, p_cl] = clusterCorrection(tVals(:, :, condIdx, grpIdx), tNull_all, adj, p);
+
+                        hVals(:, :, condIdx, grpIdx) = h_cl;
+                        pVals(:, :, condIdx, grpIdx) = p_cl;
 
                 end
 
@@ -897,6 +933,11 @@ function NIRSAnalysis(ALLDATA)
                 case 2 % Tmax
                     pVals(:, :, condIdx) = pVals_max;
                     hVals(:, :, condIdx) = pVals_max < p;
+                case 3 % for cluster based
+                    [h_cl, p_cl] = clusterCorrection(tVals(:, :, condIdx), tNull_all, adj, p);
+
+                    hVals(:, :, condIdx) = h_cl;
+                    pVals(:, :, condIdx) = p_cl;
             end
 
             disp("Mass-Uni Independent T-test for " + condNames{condOpt(condIdx)} + "_" + condNames{condOpt(condIdx2)} + " done");
@@ -1076,6 +1117,11 @@ function NIRSAnalysis(ALLDATA)
                 case 2 % Tmax
                     pVals(:, condIdx) = pVals_max;
                     hVals(:, condIdx) = pVals_max < p;
+                case 3 % for cluster based
+                    [h_cl, p_cl] = clusterCorrection(tVals(:, condIdx)', tNull_all, adj, p);
+
+                    hVals(:, condIdx) = h_cl;
+                    pVals(:, condIdx) = p_cl;
             end
 
             disp("Average Mass-Uni Independent T-test for condition " + cond + " done");
@@ -1244,6 +1290,8 @@ function NIRSAnalysis(ALLDATA)
             case 2 % maxT
                 pVals = pVals_max;
                 hVals = pVals_max < p;
+            case 3 % Cluster Correction
+                [hVals, pVals] = clusterCorrection(realT', tNull_all, adj, p);
         end
 
         tVals = realT;
@@ -1409,6 +1457,11 @@ function NIRSAnalysis(ALLDATA)
                     case 2 % Tmax
                         pVals(:, condIdx, grpIdx) = p_max;
                         hVals(:, condIdx, grpIdx) = p_max < p;
+                    case 3 % Cluster Correction
+                        [h_cl, p_cl] = clusterCorrection(realT', tNull_all, adj, p);
+
+                        hVals(:, condIdx, grpIdx) = h_cl;
+                        pVals(:, condIdx, grpIdx) = p_cl;
 
                 end
 
@@ -1581,6 +1634,11 @@ function NIRSAnalysis(ALLDATA)
                 case 2 % Tmax
                     pVals(:, condIdx) = p_max;
                     hVals(:, condIdx) = p_max < p;
+                case 3 % Cluster Correction
+                    [h_cl, p_cl] = clusterCorrection(realT', tNull_all, adj, p);
+
+                    hVals(:, condIdx) = h_cl;
+                    pVals(:, condIdx) = p_cl;
             end
 
             tVals(:, condIdx) = realT;
